@@ -128,6 +128,28 @@ app.get("/api/v1/expenses", (req: Request, res: Response) => {
   res.status(200).json(response);
 });
 
+app.get("/api/v1/expenses/:id", (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  const expense = fakeExpense.find((exp) => exp.id === id);
+
+  if (!expense) {
+    const response = {
+      success: false,
+      error: "Expense not found",
+    };
+
+    return res.status(404).json(response);
+  }
+
+  const response = {
+    success: true,
+    data: expense,
+  };
+
+  res.status(200).json(response);
+});
+
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
 });
