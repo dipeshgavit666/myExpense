@@ -150,6 +150,40 @@ app.get("/api/v1/expenses/:id", (req: Request, res: Response) => {
   res.status(200).json(response);
 });
 
+app.post("/api/v1/expenses", (req: Request, res: Response) => {
+  const { amount, category, description, date } = req.body;
+
+  if (!amount || !category || !description) {
+    const response = {
+      success: false,
+      error: "Please provide amount, category, description",
+    };
+
+    return res.status(404).json(response);
+  }
+
+  const newExpense: IExpense = {
+    id: crypto.randomUUID(),
+    userId: "user1",
+    amount,
+    category,
+    description,
+    date: date ? new Date(date) : new Date(),
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
+
+  fakeExpense.push(newExpense);
+
+  const response = {
+    success: true,
+    data: newExpense,
+    message: "New expense created successfully",
+  };
+
+  res.status(201).json(response);
+});
+
 app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
 });
