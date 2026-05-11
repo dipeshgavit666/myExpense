@@ -129,7 +129,7 @@ app.get("/api/v1/expenses", (req: Request, res: Response) => {
   res.status(200).json(response);
 });
 
-//get single expense
+// get single expense
 app.get("/api/v1/expenses/:id", (req: Request, res: Response) => {
   const { id } = req.params;
 
@@ -152,7 +152,7 @@ app.get("/api/v1/expenses/:id", (req: Request, res: Response) => {
   res.status(200).json(response);
 });
 
-//create new expense
+// create new expense
 app.post("/api/v1/expenses", (req: Request, res: Response) => {
   const { amount, category, description, date } = req.body;
 
@@ -187,7 +187,7 @@ app.post("/api/v1/expenses", (req: Request, res: Response) => {
   res.status(201).json(response);
 });
 
-//update single expense
+// update single expense
 app.put("/api/v1/expense/:id", (req: Request, res: Response) => {
   const { id } = req.params;
 
