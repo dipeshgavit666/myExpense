@@ -11,7 +11,7 @@ const PORT = 5000;
 
 app.use(express.json());
 
-export const fakeExpense: IExpense[] = [
+export const fakeExpenses: IExpense[] = [
   {
     id: "1",
     userId: "user_001",
@@ -118,20 +118,22 @@ app.get("/", (req: Request, res: Response) => {
   res.send("server is running");
 });
 
+//get all expenses
 app.get("/api/v1/expenses", (req: Request, res: Response) => {
   const response = {
     success: true,
-    data: fakeExpense,
+    data: fakeExpenses,
     message: "Expenses retives successfully",
   };
 
   res.status(200).json(response);
 });
 
+//get single expense
 app.get("/api/v1/expenses/:id", (req: Request, res: Response) => {
   const { id } = req.params;
 
-  const expense = fakeExpense.find((exp) => exp.id === id);
+  const expense = fakeExpenses.find((exp) => exp.id === id);
 
   if (!expense) {
     const response = {
@@ -150,6 +152,7 @@ app.get("/api/v1/expenses/:id", (req: Request, res: Response) => {
   res.status(200).json(response);
 });
 
+//create new expense
 app.post("/api/v1/expenses", (req: Request, res: Response) => {
   const { amount, category, description, date } = req.body;
 
@@ -173,7 +176,7 @@ app.post("/api/v1/expenses", (req: Request, res: Response) => {
     updatedAt: new Date(),
   };
 
-  fakeExpense.push(newExpense);
+  fakeExpenses.push(newExpense);
 
   const response = {
     success: true,
@@ -182,6 +185,63 @@ app.post("/api/v1/expenses", (req: Request, res: Response) => {
   };
 
   res.status(201).json(response);
+});
+
+//update single expense
+app.put("/api/v1/expense/:id", (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  const { amount, category, description, date } = req.body;
+
+  const expenseId = fakeExpenses.findIndex((expense) => expense.id === id);
+
+  if (expenseId === -1) {
+    const response = {
+      success: false,
+      error: "Expense not found",
+    };
+    return res.status(404).json(response);
+  }
+
+  fakeExpenses[expenseId] = {
+    ...fakeExpenses[expenseId],
+    amount: amount || fakeExpenses[expenseId]?.amount,
+    category: category || fakeExpenses[expenseId]?.category,
+    description: description || fakeExpenses[expenseId]?.description,
+    date: date ? new Date(date) : fakeExpenses[expenseId]?.date,
+
+    updatedAt: new Date(),
+  };
+
+  const response = {
+    success: true,
+    data: fakeExpenses[expenseId],
+    message: "Expense updated successfully",
+  };
+  res.status(200).json(response);
+});
+
+// delete single expense
+app.delete("/api/v1/expense/:id", (req: Request, res: Response) => {
+  const { id } = req.params;
+  const expenseId = fakeExpenses.findIndex((expense) => expense.id === id);
+
+  if (expenseId === -1) {
+    const response = {
+      success: false,
+      error: "expense not found",
+    };
+
+    return res.status(404).json(response);
+  }
+
+  fakeExpenses.splice(expenseId, 1);
+
+  const response = {
+    success: true,
+    messae: "expense deleted",
+  };
+  return res.status(200).json(response);
 });
 
 app.listen(PORT, () => {
