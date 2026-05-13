@@ -23,7 +23,7 @@ export interface IExpense {
   updatedAt: Date;
 }
 
-export interface User {
+export interface IUser {
   id: string;
   name: string;
   email: string;
@@ -37,4 +37,9 @@ export interface ApiResponse<T> {
   data?: T;
   message?: string;
   error?: string;
+}
+
+export interface IAuthResponse {
+  user: Omit<IUser, "password">;
+  token?: string;
 }

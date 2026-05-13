@@ -1,0 +1,76 @@
+import type { ApiResponse, IAuthResponse, IUser } from "../types";
+import { type Request, type Response } from "express";
+
+let fakeUsers: IUser[] = [
+  {
+    id: "user123",
+    name: "user123",
+    email: "user123@gmail.com",
+    password: "password123",
+    createdAt: new Date("2026-01-01"),
+    updatedAt: new Date("2026-01-01"),
+  },
+  {
+    id: "user456",
+    name: "user456",
+    email: "user456@gmail.com",
+    password: "password456",
+    createdAt: new Date("2026-01-01"),
+    updatedAt: new Date("2026-01-01"),
+  },
+  {
+    id: "user789",
+    name: "user789",
+    email: "user789@gmail.com",
+    password: "password789",
+    createdAt: new Date("2026-01-01"),
+    updatedAt: new Date("2026-01-01"),
+  },
+];
+
+export const signUp = (req: Request, res: Response) => {
+  const { name, email, password } = req.body;
+
+  if (!name || !email || !password) {
+    const response: ApiResponse<null> = {
+      success: false,
+      error: "Please provide name, email and password",
+    };
+    res.status(400).json(response);
+  }
+
+  const existingUser = fakeUsers.find((user) => user.email === email);
+
+  if (existingUser) {
+    const response: ApiResponse<null> = {
+      success: false,
+      error: "Email is alredy registered",
+    };
+    res.status(400).json(response);
+  }
+
+  const newUser: IUser = {
+    id: crypto.randomUUID(),
+    name,
+    email,
+    password,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
+
+  fakeUsers.push(newUser);
+
+  const { password: _, ...userWithoutPassword } = newUser;
+
+  const authResponse: IAuthResponse = {
+    user: userWithoutPassword,
+    token: "fake-jwt-" + newUser.id,
+  };
+
+  const response: ApiResponse<IAuthResponse> = {
+    success: true,
+    data: authResponse,
+    message: "Account created successfully",
+  };
+  return res.status(201).json(response);
+};
