@@ -74,3 +74,39 @@ export const signUp = (req: Request, res: Response) => {
   };
   return res.status(201).json(response);
 };
+
+export const login = (req: Request, res: Response) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) {
+    const response: ApiResponse<null> = {
+      success: false,
+      error: "Email and Password is required",
+    };
+    return res.status(400).json(response);
+  }
+
+  const user = fakeUsers.find((user) => user.email === email);
+
+  if (!user || user.password !== password) {
+    const response: ApiResponse<null> = {
+      success: false,
+      error: "invalid email and password",
+    };
+    return res.status(401).json(response);
+  }
+
+  const { password: _, ...userWithoutPassword } = user;
+
+  const authResponse: IAuthResponse = {
+    user: userWithoutPassword,
+    token: "fake-jwt-" + user.id,
+  };
+
+  const response: ApiResponse<IAuthResponse> = {
+    success: true,
+    data: authResponse,
+    message: "login successfull",
+  };
+  return res.status(201).json(response);
+};
