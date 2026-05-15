@@ -110,3 +110,61 @@ export const login = (req: Request, res: Response) => {
   };
   return res.status(201).json(response);
 };
+
+export const getUser = (req: Request, res: Response) => {
+  const userId = "user123";
+
+  const user = fakeUsers.find((user) => user.id === userId);
+  if (!user) {
+    const response: ApiResponse<null> = {
+      success: false,
+      error: "User not found",
+    };
+    return res.status(401).json(response);
+  }
+
+  const { password: _, ...userWithoutPassword } = user;
+
+  const response: ApiResponse<Omit<IUser, "password">> = {
+    success: true,
+    data: userWithoutPassword,
+  };
+  return res.status(200).json(response);
+};
+
+export const updateProfile = (req: Request, res: Response) => {
+  const { name, email } = req.body;
+
+  const userId = "user123";
+
+  const userIndex = fakeUsers.findIndex((user) => user.id === userId);
+
+  if (userIndex === -1) {
+    const response: ApiResponse<null> = {
+      success: false,
+      error: "User not found",
+    };
+    return res.status(404).json(response);
+  }
+
+  if (email && email !== fakeUsers[userIndex].email) {
+    const emailExistes = fakeUsers.find((user) => user.email === email);
+
+    if (emailExistes) {
+      const response: ApiResponse<null> = {
+        success: false,
+        error: "Email alresy in use!",
+      };
+      return res.status(409).json(response);
+    }
+  }
+
+  fakeUsers[userIndex] = {
+    ...fakeUsers[userIndex],
+    name: name || fakeUsers[userIndex].name,
+    email: email || fakeUsers[userIndex].email,
+    updatedAt: new Date(),
+  };
+
+  const { password: _, ...userWithoutPassword } = fakeUsers[userIndex];
+};
